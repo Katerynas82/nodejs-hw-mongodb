@@ -1,24 +1,23 @@
 import { model, Schema } from 'mongoose';
 
 const ContactsSchema = new Schema(
-
-{
+  {
     name: {
       type: String,
       required: true,
     },
-    "phoneNumber": {
-      type: Number,
+    phoneNumber: {
+      type: String,
       required: true,
     },
-    email:{
+    email: {
       type: String,
       required: true,
     },
     isFavourite: {
       type: Boolean,
-        required: true,
-      default: false
+      required: true,
+      default: false,
     },
 
     contactType: {
@@ -26,12 +25,12 @@ const ContactsSchema = new Schema(
       required: true,
       enum: ['personal', 'home', 'other'],
     },
-
-},
- {
+  },
+  {
     timestamps: true,
     versionKey: false,
-  },);
+  },
+);
 
   // console.log(ContactsSchema.path('isFavourite'));
 

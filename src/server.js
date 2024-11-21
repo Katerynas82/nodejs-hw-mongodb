@@ -20,18 +20,38 @@ export const setupServer = () => {
   });
   app.use(pinoHttp({ logger }));
 
+   app.use((req, res, next) => {
+     res.success = (data, message = 'Success', statusCode = 200) => {
+       res.status(statusCode).json({
+         status: 'success',
+         message,
+         data,
+       });
+     };
+
+     res.fail = (message, statusCode = 400) => {
+       res.status(statusCode).json({
+         status: 'error',
+         message,
+       });
+     };
+
+     next();
+   });
+
   app.get('/', (req, res) => {
-    res.json({
+    res.success({
       message: 'Hello world!',
     });
   });
 
-    app.get('/contacts', async (req, res) => {
-    const contacts = await getAllContacts();
-
-    res.status(200).json({
-      data: contacts,
-    });
+  app.get('/contacts', async (req, res) => {
+    try {
+      const contacts = await getAllContacts();
+      res.success(contacts, 'Contacts retrieved successfully');
+    } catch  {
+      res.fail('Failed to retrieve contacts', 500);
+    }
   });
 
   app.get('/contacts/:contactId', async (req, res, next) => {
@@ -40,26 +60,23 @@ export const setupServer = () => {
       const contact = await getContactById(contactId);
 
       if (!contact) {
-        return res.status(404).json({ message: 'Contact not found' });
+        return res.fail('Contact not found', 404);
       }
 
-      res.status(200).json({ data: contact });
-    } catch (err) {
-      next(err);
+      res.success(contact, 'Contact retrieved successfully');
+    } catch {
+      res.fail('Failed to retrieve contact', 500);
     }
   });
   app.use('*', (req, res, next) => {
-    res.status(404).json({
-      message: 'Not found',
-    });
-  });
+    res.fail('Not found', 404);
+});
 
   app.use((err, req, res, next) => {
-    res.status(500).json({
-      message: 'Something went wrong',
-      error: err.message,
+     res.fail('Something went wrong', 500);
+     console.error(err);
     });
-  });
+
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
