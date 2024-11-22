@@ -1,6 +1,6 @@
-import { model, Schema } from 'mongoose';
+import mongoose from 'mongoose';
 
-const ContactsSchema = new Schema(
+const ContactsSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -32,7 +32,4 @@ const ContactsSchema = new Schema(
   },
 );
 
-  // console.log(ContactsSchema.path('isFavourite'));
-
-
-  export const ContactsCollection = model('contacts', ContactsSchema);
+export const ContactsCollection = mongoose.model('Contact', ContactsSchema);
